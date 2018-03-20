@@ -6,6 +6,8 @@ navbar:
       href: index.html
     - text: "About"
       href: about.html
+    - text: "Word Cloud"
+      href: wordcloud.html
 output: 
   tufte::tufte_html: default
   dev: "svglite"

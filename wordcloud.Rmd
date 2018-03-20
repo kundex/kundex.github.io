@@ -1,0 +1,177 @@
+---
+title: "Word Cloud-Generator für die Veröffentlichungsdatenbanken <br>bei IT.NRW"
+author: "Lars Hofmann"
+date: "`r Sys.Date()`"
+output: 
+  tufte::tufte_html: default
+  dev: "svglite"
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache = FALSE, message = FALSE, warnings = FALSE)
+options(scipen=999) # non-scientific number format
+options(digits=2) # round to 2 decimal places
+```
+
+# Überblick
+
+`r tufte::newthought('Das R-Paket')` [`wordcloud`](https://cran.r-project.org/web/packages/wordcloud/) von Ian Fellows ist ein einfaches und elegantes Tool für die randomisierte Erzeugung von Schlagwortwolken (engl.: tag cloud, word cloud). Damit lassen sich die häufigsten Wörter insbesondere bei umfangreichen Texten in einer zusammenfassenden grafischen Visualisierung darstellen. 
+
+```{marginfigure}
+Die SVG-Dateigröße von `svglite` schrumpft im Vergleich zur Standard-SVG-Schnittstelle von R auf ein Fünfundzwanzigstel (ca. 17 kb)!
+```
+
+Zusammen mit dem R-Paket [`svglite`](https://cran.r-project.org/web/packages/svglite/) können diese Schlagwortwolken als extrem kleine SVG-Dateien bereitgestellt werden. Die Texte bleiben erhalten (keine Pfadumwandlung) und können komplett nachbearbeitet werden.
+
+Im Folgenden möchte ich für die von [`IT.NRW`](https://www.it.nrw.de) betriebenen Veröffentlichungsdatenbanken [`Landesdatenbank Nordrhein-Westfalen`](https://www.ldb.nrw.de) (LDB), [`Regionaldatenbank Deutschland`](https://www.regionalstatistik.de) (RDB) und [`Kommunale Bildungsdatenbank`](https://www.bildungsmonitoring.de) (BDB) Schlagwortwolken mit zentralen Begriffen des jeweiligen statistischen Datenangebots erzeugen. Da sich hier eine Gewichtung (= Textgröße in der Cloud) nach Häufigkeiten nicht eignet, werden diese Faktor manuell bestimmt. Die Farbgebung wird dem Corporate Design von [`IT.NRW`](https://www.it.nrw.de) angepasst.
+
+#  Setup und Eingangsdaten
+
+**Setup**
+
+```{marginfigure}
+Die Vorgehensweise ist abhängig vom Betriebssystem.
+```
+
+Zuerst kümmern wir uns um die benötigten R-Pakete. Das folgende Skript prüft, ob diese bereits auf dem System installiert sind. Fehlende Pakete werden direkt installiert und in die Session geladen. Gegebenenfalls müssen Pakete mit Administratorrechten installiert werden.
+
+```{r pack, warning = FALSE, message = FALSE}
+libs <- c("wordcloud", "svglite")
+for (x in libs){
+  if(x %in% rownames(installed.packages()) == FALSE) {
+    print(paste0("installing ", x, "..."))
+    install.packages(x)
+  }
+  else{
+    print (paste0(x, " is already installed"))
+  }
+  library(x, character.only = TRUE)
+}
+```
+
+**Eingangsdaten**
+
+Als Eingangsdaten benötigen wir:
+
+- drei Dateien mit den jeweiligen Begriffen der Datenbanken "[DB]" sowie den Gewichtungen: `words_[DB].csv`
+- drei Dateien mit den jeweiligen Farbpaletten für die Datenbanken "[DB]" (RGB-Absolutwerte): `cali_[DB].csv`
+
+```{marginfigure}
+Für Komma-separierte Daten nutzen wir `read.csv`. Wegen der deutschen Umlaute muss das Argument `encoding` gesetzt werden.
+```
+
+```{r pre1, warning = FALSE, message = FALSE}
+terms_ldb <- read.csv("words_ldb.csv", 
+                      header=TRUE, 
+                      colClasses=c("character",
+                      rep("numeric",2)), 
+                      encoding = "latin1")
+terms_rdb <- read.csv("words_rdb.csv", 
+                      header=TRUE, 
+                      colClasses=c("character",
+                      rep("numeric",2)), 
+                      encoding = "latin1")
+terms_bdb <- read.csv("words_bdb.csv", 
+                      header=TRUE, 
+                      colClasses=c("character",
+                      rep("numeric",2)), 
+                      encoding = "latin1")
+
+knitr::kable(
+  head(terms_ldb), caption = "Ausschnitt aus der
+  Begriffsdatei der LDB."
+)
+```
+
+```{marginfigure}
+Die Farbpaletten müssen zunächst in Data Frames `calib_[DB]` geladen werden
+```
+
+```{r pre2, warning = FALSE, message = FALSE}
+calib_ldb <- read.csv("cali_ldb.csv", header = TRUE)
+calib_rdb <- read.csv("cali_rdb.csv", header = TRUE)
+calib_bdb <- read.csv("cali_bdb.csv", header = TRUE)
+
+knitr::kable(
+  head(calib_ldb), caption = "RGB-Werte für die 
+  Farbgebung der LDB."
+)
+```
+
+# Erzeugen der Schlagwortwolken
+
+```{marginfigure}
+Die Funktion `set.seed()` stellt die Reproduzierbarkeit des Ergebnisses sicher. Der von `wordcloud` genutzte R-Zufallszahlengenerator wird damit auf bestimmte Werte "fixiert".
+```
+
+```{marginfigure}
+Die Skalierung der SVG-Abbildungen unterscheiden sich je nach dem, ob die Abbildungen in das RMarkdown-Dokument oder in separate Dateien exportiert werden. Mit `scale = c([MAX], [MIN])` lässt sich das Verhalten beeinflussen.
+```
+
+```{r word_ldb, warning = FALSE, message = FALSE, fig.fullwidth = TRUE}
+#set.seed(1034)
+set.seed(5231)
+clrs_ldb <- rgb(calib_ldb$r, calib_ldb$g, calib_ldb$b, 
+                names = calib_ldb$name, max = 255)
+
+#svglite("cloud_ldb2.svg")
+wordcloud(words = terms_ldb$word, 
+          freq = terms_ldb$freq, 
+          min.freq = 1,
+          random.order = FALSE, 
+          rot.per = 0.3, 
+          scale = c(2.5,.3), 
+          colors = clrs_ldb,
+          system_fonts = list(sans = "DejaVu Sans"))
+#dev.off()
+```
+
+```{marginfigure}
+Für die zwei anderen Wolken passen wir die obere Größenklasse [MAX] in `scale` an, damit die DB-Bezeichnungen die Breite ausfüllen.
+```
+
+```{r word_rdb, warning = FALSE, message = FALSE, fig.fullwidth = TRUE}
+#set.seed(1034)
+set.seed(5231)
+clrs_rdb <- rgb(calib_rdb$r, calib_rdb$g, calib_rdb$b, 
+                names = calib_rdb$name, max = 255)
+
+#svglite("cloud_rdb2.svg")
+wordcloud(words = terms_rdb$word, 
+          freq = terms_rdb$freq, 
+          min.freq = 1,
+          random.order = FALSE, 
+          rot.per = 0.3, 
+          scale = c(3.1,.3), 
+          colors = clrs_rdb,
+          system_fonts = list(sans = "DejaVu Sans"))
+#dev.off()
+```
+
+```{r word_bdb, warning = FALSE, message = FALSE, fig.fullwidth = TRUE}
+#set.seed(1034)
+set.seed(5281)
+clrs_bdb <- rgb(calib_bdb$r, calib_bdb$g, calib_bdb$b, 
+                names = calib_bdb$name, max = 255)
+
+#svglite("cloud_bdb2.svg")
+wordcloud(words = terms_bdb$word, 
+          freq = terms_bdb$freq, 
+          min.freq = 1,
+          random.order = FALSE, 
+          rot.per = 0.3, 
+          scale = c(3.1,.3), 
+          colors = clrs_bdb,
+          system_fonts = list(sans = "DejaVu Sans"))
+#dev.off()
+```
+
+# Ergebnis
+
+Wie schon eingangs erwähnt, können die mittels `svglite` auf Minimalgröße exportierten SVG-Dateien umfangreich nachbearbeitet werden. Àlle wichtigen SVG-Attribute wie `viewbox`, `font-size`, `fill`, `font-family` sowie die Begriffe selbst stehen als indizierbare Elemente zur Verfügung.
+
+# Systeminfo
+
+```{r info, cache =FALSE}
+sessionInfo()
+```
