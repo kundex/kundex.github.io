@@ -13,3 +13,4 @@ output:
     toc: yes
     toc_float: true 
     dev: svglite
+output_dir: "."
