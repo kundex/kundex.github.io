@@ -7,10 +7,6 @@ navbar:
     - text: "About"
       href: about.html
 output: 
-  html_document:
-    highlight: pygments
-    theme: sandstone
-    toc: yes
-    toc_float: true 
-    dev: svglite
+  tufte::tufte_html: default
+  dev: "svglite"
 output_dir: "."
