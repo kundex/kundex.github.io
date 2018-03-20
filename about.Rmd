@@ -1,5 +1,15 @@
 ---
-title: "about"
+title: "About"
+author: "Lars Hofmann"
+date: "`r Sys.Date()`"
 ---
 
 # Über mich
+
+======================
+
+Wie gesagt, hier ist noch nix los.
+
+Aber das wird noch ..
+
+Zu mir gibt es noch was auf [`xing`](https://www.xing.com/profile/Lars_Hofmann16) zu erfahren.

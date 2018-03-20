@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Lars Hofmann" />
+
+
+<title>Exploring the NOAA Storm Database focused on severe weather events</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/sandstone.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 61px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+
+.section h2 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h3 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h4 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h5 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h6 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">LaHo_x</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">
+    <span class="fa fa-fort-awesome"></span>
+     
+    Home
+  </a>
+</li>
+<li>
+  <a href="about.html">
+    <span class="fa fa-child"></span>
+     
+    About
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-chevron-circle-down"></span>
+     
+    Mehr
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">R-Stuff</li>
+    <li>
+      <a href="wordcloud.html">Word Cloud</a>
+    </li>
+    <li>
+      <a href="pga_rr.html">NOAA Storm Database</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">Was noch?</li>
+    <li>
+      <a href="page_c.html">Page C</a>
+    </li>
+    <li>
+      <a href="page_d.html">Page D</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/kundex">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://www.xing.com/profile/Lars_Hofmann16">
+    <span class="fa fa-xing"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Exploring the NOAA Storm Database focused on severe weather events</h1>
+<h4 class="author"><em>Lars Hofmann</em></h4>
+<h4 class="date"><em>March 4, 2018</em></h4>
+
+</div>
+
+
+<div id="synopsis" class="section level1">
+<h1>Synopsis</h1>
+<p>The U.S. National Oceanic and Atmospheric Administration’s (NOAA) storm database is a suitable source for exploring major weather effects in order to priorize the right cases and related countermeasures. Looking at the consequences of severe weather conditions, we focus on population health and economic issues that are sufficiently measurable. It can be narrowed down to two key questions to be answered:</p>
+<p><strong>1. Which types of weather events are most harmful with respect to population health?</strong><br />
+<strong>2. Which types of weather events have the greatest economic consequences?</strong></p>
+<p>The database mentioned above consists of a time series starting in the year 1950 and ending in November 2011. It forms a broad basis for our following analysis. This is carries out with R in a reproducible way, which means that every step of the data retrieval, reshaping calculation and presenting is completely comprehensible.</p>
+<p>Here we go..</p>
+<hr />
+<div id="setup" class="section level2">
+<h2>Setup</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">knitr<span class="op">::</span>opts_chunk<span class="op">$</span><span class="kw">set</span>(<span class="dt">echo =</span> <span class="ot">TRUE</span>, <span class="dt">cache =</span> <span class="ot">TRUE</span>, <span class="dt">message =</span> <span class="ot">FALSE</span>, <span class="dt">warnings =</span> <span class="ot">FALSE</span>)
+<span class="kw">options</span>(<span class="dt">scipen=</span><span class="dv">999</span>) <span class="co"># non-scientific number format</span>
+<span class="kw">options</span>(<span class="dt">digits=</span><span class="dv">2</span>) <span class="co"># round to 2 decimal places</span>
+<span class="kw">library</span>(tidyverse) <span class="co"># includes ggplot2, tibble, tidyr, readr, purrr, dplyr</span></code></pre></div>
+<hr />
+</div>
+<div id="data-processing" class="section level2">
+<h2>Data Processing</h2>
+<div id="raw-data-retrival" class="section level3">
+<h3>Raw Data Retrival</h3>
+<p>The data for this assignment come in the form of a comma-separated-value file compressed via the bzip2 algorithm. At the first step, we need to retrieve the raw data from the online source and decompress it to a raw dataset called <code>storm_raw</code>. Due to the size of the data, we use the more efficient method <code>read_csv</code> from the <code>tidyverse</code> package to import the data as a tibble. Moreover, we use <code>cache = TRUE</code> as standard chunk set.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="cf">if</span>(<span class="op">!</span><span class="kw">file.exists</span>(<span class="st">&quot;StormData.csv.bz2&quot;</span>)){
+url &lt;-<span class="st"> &quot;https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2&quot;</span>
+<span class="kw">download.file</span>(url, <span class="dt">destfile =</span> <span class="st">&quot;StormData.csv.bz2&quot;</span>, <span class="dt">method =</span> <span class="st">&quot;curl&quot;</span>)
+date_storm_raw &lt;-<span class="st"> </span><span class="kw">format</span>(<span class="kw">Sys.time</span>(), <span class="st">&quot;%a %d %b %Y %X&quot;</span>)
+}
+
+storm_raw &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">bzfile</span>(<span class="st">&quot;./StormData.csv.bz2&quot;</span>))</code></pre></div>
+</div>
+<div id="check-import" class="section level3">
+<h3>Check Import</h3>
+<p>Secondly, we want to check the import.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">class</span>(storm_raw)</code></pre></div>
+<pre><code>## [1] &quot;tbl_df&quot;     &quot;tbl&quot;        &quot;data.frame&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">names</span>(storm_raw)</code></pre></div>
+<pre><code>##  [1] &quot;STATE__&quot;    &quot;BGN_DATE&quot;   &quot;BGN_TIME&quot;   &quot;TIME_ZONE&quot;  &quot;COUNTY&quot;    
+##  [6] &quot;COUNTYNAME&quot; &quot;STATE&quot;      &quot;EVTYPE&quot;     &quot;BGN_RANGE&quot;  &quot;BGN_AZI&quot;   
+## [11] &quot;BGN_LOCATI&quot; &quot;END_DATE&quot;   &quot;END_TIME&quot;   &quot;COUNTY_END&quot; &quot;COUNTYENDN&quot;
+## [16] &quot;END_RANGE&quot;  &quot;END_AZI&quot;    &quot;END_LOCATI&quot; &quot;LENGTH&quot;     &quot;WIDTH&quot;     
+## [21] &quot;F&quot;          &quot;MAG&quot;        &quot;FATALITIES&quot; &quot;INJURIES&quot;   &quot;PROPDMG&quot;   
+## [26] &quot;PROPDMGEXP&quot; &quot;CROPDMG&quot;    &quot;CROPDMGEXP&quot; &quot;WFO&quot;        &quot;STATEOFFIC&quot;
+## [31] &quot;ZONENAMES&quot;  &quot;LATITUDE&quot;   &quot;LONGITUDE&quot;  &quot;LATITUDE_E&quot; &quot;LONGITUDE_&quot;
+## [36] &quot;REMARKS&quot;    &quot;REFNUM&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(storm_raw, <span class="dt">n =</span> <span class="dv">3</span>)</code></pre></div>
+<pre><code>## # A tibble: 3 x 37
+##   STATE__ BGN_DATE       BGN_TIME TIME_ZONE COUNTY COUNTYNAME STATE EVTYPE
+##     &lt;dbl&gt; &lt;chr&gt;          &lt;chr&gt;    &lt;chr&gt;      &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt; &lt;chr&gt; 
+## 1    1.00 4/18/1950 0:0… 0130     CST        97.0  MOBILE     AL    TORNA…
+## 2    1.00 4/18/1950 0:0… 0145     CST         3.00 BALDWIN    AL    TORNA…
+## 3    1.00 2/20/1951 0:0… 1600     CST        57.0  FAYETTE    AL    TORNA…
+## # ... with 29 more variables: BGN_RANGE &lt;dbl&gt;, BGN_AZI &lt;chr&gt;,
+## #   BGN_LOCATI &lt;chr&gt;, END_DATE &lt;chr&gt;, END_TIME &lt;chr&gt;, COUNTY_END &lt;dbl&gt;,
+## #   COUNTYENDN &lt;chr&gt;, END_RANGE &lt;dbl&gt;, END_AZI &lt;chr&gt;, END_LOCATI &lt;chr&gt;,
+## #   LENGTH &lt;dbl&gt;, WIDTH &lt;dbl&gt;, F &lt;int&gt;, MAG &lt;dbl&gt;, FATALITIES &lt;dbl&gt;,
+## #   INJURIES &lt;dbl&gt;, PROPDMG &lt;dbl&gt;, PROPDMGEXP &lt;chr&gt;, CROPDMG &lt;dbl&gt;,
+## #   CROPDMGEXP &lt;chr&gt;, WFO &lt;chr&gt;, STATEOFFIC &lt;chr&gt;, ZONENAMES &lt;chr&gt;,
+## #   LATITUDE &lt;dbl&gt;, LONGITUDE &lt;dbl&gt;, LATITUDE_E &lt;dbl&gt;, LONGITUDE_ &lt;dbl&gt;,
+## #   REMARKS &lt;chr&gt;, REFNUM &lt;dbl&gt;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str</span>(storm_raw)</code></pre></div>
+<pre><code>## Classes &#39;tbl_df&#39;, &#39;tbl&#39; and &#39;data.frame&#39;:    902297 obs. of  37 variables:
+##  $ STATE__   : num  1 1 1 1 1 1 1 1 1 1 ...
+##  $ BGN_DATE  : chr  &quot;4/18/1950 0:00:00&quot; &quot;4/18/1950 0:00:00&quot; &quot;2/20/1951 0:00:00&quot; &quot;6/8/1951 0:00:00&quot; ...
+##  $ BGN_TIME  : chr  &quot;0130&quot; &quot;0145&quot; &quot;1600&quot; &quot;0900&quot; ...
+##  $ TIME_ZONE : chr  &quot;CST&quot; &quot;CST&quot; &quot;CST&quot; &quot;CST&quot; ...
+##  $ COUNTY    : num  97 3 57 89 43 77 9 123 125 57 ...
+##  $ COUNTYNAME: chr  &quot;MOBILE&quot; &quot;BALDWIN&quot; &quot;FAYETTE&quot; &quot;MADISON&quot; ...
+##  $ STATE     : chr  &quot;AL&quot; &quot;AL&quot; &quot;AL&quot; &quot;AL&quot; ...
+##  $ EVTYPE    : chr  &quot;TORNADO&quot; &quot;TORNADO&quot; &quot;TORNADO&quot; &quot;TORNADO&quot; ...
+##  $ BGN_RANGE : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ BGN_AZI   : chr  NA NA NA NA ...
+##  $ BGN_LOCATI: chr  NA NA NA NA ...
+##  $ END_DATE  : chr  NA NA NA NA ...
+##  $ END_TIME  : chr  NA NA NA NA ...
+##  $ COUNTY_END: num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ COUNTYENDN: chr  NA NA NA NA ...
+##  $ END_RANGE : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ END_AZI   : chr  NA NA NA NA ...
+##  $ END_LOCATI: chr  NA NA NA NA ...
+##  $ LENGTH    : num  14 2 0.1 0 0 1.5 1.5 0 3.3 2.3 ...
+##  $ WIDTH     : num  100 150 123 100 150 177 33 33 100 100 ...
+##  $ F         : int  3 2 2 2 2 2 2 1 3 3 ...
+##  $ MAG       : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ FATALITIES: num  0 0 0 0 0 0 0 0 1 0 ...
+##  $ INJURIES  : num  15 0 2 2 2 6 1 0 14 0 ...
+##  $ PROPDMG   : num  25 2.5 25 2.5 2.5 2.5 2.5 2.5 25 25 ...
+##  $ PROPDMGEXP: chr  &quot;K&quot; &quot;K&quot; &quot;K&quot; &quot;K&quot; ...
+##  $ CROPDMG   : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ CROPDMGEXP: chr  NA NA NA NA ...
+##  $ WFO       : chr  NA NA NA NA ...
+##  $ STATEOFFIC: chr  NA NA NA NA ...
+##  $ ZONENAMES : chr  NA NA NA NA ...
+##  $ LATITUDE  : num  3040 3042 3340 3458 3412 ...
+##  $ LONGITUDE : num  8812 8755 8742 8626 8642 ...
+##  $ LATITUDE_E: num  3051 0 0 0 0 ...
+##  $ LONGITUDE_: num  8806 0 0 0 0 ...
+##  $ REMARKS   : chr  NA NA NA NA ...
+##  $ REFNUM    : num  1 2 3 4 5 6 7 8 9 10 ...
+##  - attr(*, &quot;spec&quot;)=List of 2
+##   ..$ cols   :List of 37
+##   .. ..$ STATE__   : list()
+##   .. .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_double&quot; &quot;collector&quot;
+##   .. ..$ BGN_DATE  : list()
+##   .. .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_character&quot; &quot;collector&quot;
+##   .. ..$ BGN_TIME  : list()
+##   .. .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_character&quot; &quot;collector&quot;
+##   .. ..$ TIME_ZONE : list()
+##   .. .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_character&quot; &quot;collector&quot;
+##   .. ..$ COUNTY    : list()
+##   .. .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_double&quot; &quot;collector&quot;
+##   .. ..$ COUNTYNAME: list()
+##   .. .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_character&quot; &quot;collector&quot;
+##   .. ..$ STATE     : list()
+##   .. .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_character&quot; &quot;collector&quot;
+##   .. ..$ EVTYPE    : list()
+##   .. .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_character&quot; &quot;collector&quot;
+##   .. ..$ BGN_RANGE : list()
+##   .. .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_double&quot; &quot;collector&quot;
+##   .. ..$ BGN_AZI   : list()
+##   .. .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_character&quot; &quot;collector&quot;
+##   .. ..$ BGN_LOCATI: list()
+##   .. .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_character&quot; &quot;collector&quot;
+##   .. ..$ END_DATE  : list()
+##   .. .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_character&quot; &quot;collector&quot;
+##   .. ..$ END_TIME  : list()
+##   .. .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_character&quot; &quot;collector&quot;
+##   .. ..$ COUNTY_END: list()
+##   .. .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_double&quot; &quot;collector&quot;
+##   .. ..$ COUNTYENDN: list()
+##   .. .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_character&quot; &quot;collector&quot;
+##   .. ..$ END_RANGE : list()
+##   .. .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_double&quot; &quot;collector&quot;
+##   .. ..$ END_AZI   : list()
+##   .. .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_character&quot; &quot;collector&quot;
+##   .. ..$ END_LOCATI: list()
+##   .. .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_character&quot; &quot;collector&quot;
+##   .. ..$ LENGTH    : list()
+##   .. .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_double&quot; &quot;collector&quot;
+##   .. ..$ WIDTH     : list()
+##   .. .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_double&quot; &quot;collector&quot;
+##   .. ..$ F         : list()
+##   .. .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_integer&quot; &quot;collector&quot;
+##   .. ..$ MAG       : list()
+##   .. .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_double&quot; &quot;collector&quot;
+##   .. ..$ FATALITIES: list()
+##   .. .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_double&quot; &quot;collector&quot;
+##   .. ..$ INJURIES  : list()
+##   .. .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_double&quot; &quot;collector&quot;
+##   .. ..$ PROPDMG   : list()
+##   .. .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_double&quot; &quot;collector&quot;
+##   .. ..$ PROPDMGEXP: list()
+##   .. .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_character&quot; &quot;collector&quot;
+##   .. ..$ CROPDMG   : list()
+##   .. .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_double&quot; &quot;collector&quot;
+##   .. ..$ CROPDMGEXP: list()
+##   .. .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_character&quot; &quot;collector&quot;
+##   .. ..$ WFO       : list()
+##   .. .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_character&quot; &quot;collector&quot;
+##   .. ..$ STATEOFFIC: list()
+##   .. .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_character&quot; &quot;collector&quot;
+##   .. ..$ ZONENAMES : list()
+##   .. .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_character&quot; &quot;collector&quot;
+##   .. ..$ LATITUDE  : list()
+##   .. .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_double&quot; &quot;collector&quot;
+##   .. ..$ LONGITUDE : list()
+##   .. .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_double&quot; &quot;collector&quot;
+##   .. ..$ LATITUDE_E: list()
+##   .. .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_double&quot; &quot;collector&quot;
+##   .. ..$ LONGITUDE_: list()
+##   .. .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_double&quot; &quot;collector&quot;
+##   .. ..$ REMARKS   : list()
+##   .. .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_character&quot; &quot;collector&quot;
+##   .. ..$ REFNUM    : list()
+##   .. .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_double&quot; &quot;collector&quot;
+##   ..$ default: list()
+##   .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_guess&quot; &quot;collector&quot;
+##   ..- attr(*, &quot;class&quot;)= chr &quot;col_spec&quot;</code></pre>
+<p>At a first glance, everything looks properly imported. We’ve got a tibble with 902297 observations of 37 variables. Every variable seems to be labeled.</p>
+</div>
+<div id="select-relevant-variables" class="section level3">
+<h3>Select relevant variables</h3>
+<p>Refering to our research questions, we identify all relevant vaiables derived from <code>names()</code> and the online documentation provided above. We cut them into the dataset <code>storm_select</code> via <code>select</code> using a single pipe.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">storm_select &lt;-<span class="st"> </span>storm_raw <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">select</span>(<span class="st">&quot;EVTYPE&quot;</span>, <span class="st">&quot;FATALITIES&quot;</span>, <span class="st">&quot;INJURIES&quot;</span>, <span class="st">&quot;PROPDMG&quot;</span>, <span class="st">&quot;PROPDMGEXP&quot;</span>, <span class="st">&quot;CROPDMG&quot;</span>, <span class="st">&quot;CROPDMGEXP&quot;</span>)</code></pre></div>
+<p>The new dataset consists of only 7 variables, i. e.:</p>
+<ul>
+<li>event type,</li>
+<li>fatalities,</li>
+<li>injuries,</li>
+<li>property damage,</li>
+<li>property damage exponent,</li>
+<li>crop damage and</li>
+<li>crop damage exponent.</li>
+</ul>
+</div>
+<div id="convert-damage-codes-into-real-expenses" class="section level3">
+<h3>Convert damage codes into real expenses</h3>
+<p>To do so, we initiate a loop — one for property and one for crop — and input the code-value pairs (from variable <code>PROPDMGEXP</code> and <code>CROPDMGEXP</code>, resp.), e. g. <code>H100</code> means code “H” that stands for “factor hundred”. By this, we are able to calculate the resulting variable “PROPDMGREAL” with only one loop using the method <code>substr</code>. The calculation is a simple multiplication with the variables <code>PROPDMG</code> and <code>CROPDMG</code>, resp. Inside the loop, the parts are binded into a new dataset <code>storm_convert</code> that is initiated in advance. Last but not least, we tidy up some patterns in variable <code>EVTYPE</code>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">storm_convert =<span class="st"> </span><span class="ot">NULL</span>
+
+<span class="cf">for</span>(n <span class="cf">in</span> <span class="kw">c</span>(<span class="st">&quot;H100&quot;</span>, <span class="st">&quot;K1000&quot;</span>, <span class="st">&quot;M1000000&quot;</span>, <span class="st">&quot;B1000000000&quot;</span>)) {
+  part &lt;-<span class="st"> </span>storm_select <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">          </span><span class="kw">filter</span>(PROPDMGEXP <span class="op">==</span><span class="st"> </span><span class="kw">substr</span>(n, <span class="dv">1</span>, <span class="dv">1</span>) <span class="op">|</span><span class="st"> </span>CROPDMGEXP <span class="op">==</span><span class="st"> </span><span class="kw">substr</span>(n, <span class="dv">1</span>, <span class="dv">1</span>)) <span class="op">%&gt;%</span>
+<span class="st">          </span><span class="kw">mutate</span>(<span class="dt">PROPDMGREAL =</span> PROPDMG <span class="op">*</span><span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">substr</span>(n, <span class="dv">2</span>, <span class="kw">nchar</span>(n)))) <span class="op">%&gt;%</span>
+<span class="st">          </span><span class="kw">mutate</span>(<span class="dt">CROPDMGREAL =</span> CROPDMG <span class="op">*</span><span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">substr</span>(n, <span class="dv">2</span>, <span class="kw">nchar</span>(n))))
+  
+  storm_convert &lt;-<span class="st"> </span><span class="kw">rbind</span>(storm_convert, part)
+}
+
+ev_types &lt;-<span class="st"> </span><span class="kw">tolower</span>(storm_convert<span class="op">$</span>EVTYPE)
+ev_types &lt;-<span class="st"> </span><span class="kw">gsub</span>(<span class="st">&quot;[[:blank:][:punct:]+]&quot;</span>, <span class="st">&quot; &quot;</span>, ev_types)
+storm_convert<span class="op">$</span>EVTYPE &lt;-<span class="st"> </span>ev_types</code></pre></div>
+<p>In result, we’ve got got a tibble <code>storm_convert</code> with 444510 observations of 9 variables. In the last data processing step, we remove the dataset that are not needed any more, and have a look at our neat processed tibble to go further.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">rm</span>(storm_raw)
+<span class="kw">rm</span>(storm_select)
+
+<span class="kw">class</span>(storm_convert)</code></pre></div>
+<pre><code>## [1] &quot;tbl_df&quot;     &quot;tbl&quot;        &quot;data.frame&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">names</span>(storm_convert)</code></pre></div>
+<pre><code>## [1] &quot;EVTYPE&quot;      &quot;FATALITIES&quot;  &quot;INJURIES&quot;    &quot;PROPDMG&quot;     &quot;PROPDMGEXP&quot; 
+## [6] &quot;CROPDMG&quot;     &quot;CROPDMGEXP&quot;  &quot;PROPDMGREAL&quot; &quot;CROPDMGREAL&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(storm_convert, <span class="dt">n =</span> <span class="dv">3</span>)</code></pre></div>
+<pre><code>## # A tibble: 3 x 9
+##   EVTYPE         FATALITIES INJURIES PROPDMG PROPDMGEXP CROPDMG CROPDMGEXP
+##   &lt;chr&gt;               &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;        &lt;dbl&gt; &lt;chr&gt;     
+## 1 thunderstorm …          0        0    5.00 H                0 &lt;NA&gt;      
+## 2 thunderstorm …          0        0    5.00 H                0 &lt;NA&gt;      
+## 3 thunderstorm …          0        0    2.00 H                0 &lt;NA&gt;      
+## # ... with 2 more variables: PROPDMGREAL &lt;dbl&gt;, CROPDMGREAL &lt;dbl&gt;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str</span>(storm_convert)</code></pre></div>
+<pre><code>## Classes &#39;tbl_df&#39;, &#39;tbl&#39; and &#39;data.frame&#39;:    444510 obs. of  9 variables:
+##  $ EVTYPE     : chr  &quot;thunderstorm winds&quot; &quot;thunderstorm winds&quot; &quot;thunderstorm winds&quot; &quot;thunderstorm winds&quot; ...
+##  $ FATALITIES : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ INJURIES   : num  0 0 0 0 0 2 15 0 2 2 ...
+##  $ PROPDMG    : num  5 5 2 3 5 5 25 2.5 25 2.5 ...
+##  $ PROPDMGEXP : chr  &quot;H&quot; &quot;H&quot; &quot;H&quot; &quot;H&quot; ...
+##  $ CROPDMG    : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ CROPDMGEXP : chr  NA NA NA NA ...
+##  $ PROPDMGREAL: num  500 500 200 300 500 500 25000 2500 25000 2500 ...
+##  $ CROPDMGREAL: num  0 0 0 0 0 0 0 0 0 0 ...</code></pre>
+<hr />
+</div>
+</div>
+<div id="results" class="section level2">
+<h2>Results</h2>
+<p>Here we are going to present the results by following two major questions:</p>
+<p><strong>1. Across the United States, which types of events (as indicated in the EVTYPE variable) are most harmful with respect to population health?</strong></p>
+<p><strong>2. Across the United States, which types of events have the greatest economic consequences?</strong></p>
+<p>First of it, we summarise the processed data types using <code>summarise</code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">storm_convert <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="kw">sum</span>(FATALITIES))
+storm_convert <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="kw">sum</span>(INJURIES))
+
+storm_convert <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="kw">sum</span>(PROPDMGREAL))
+storm_convert <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="kw">sum</span>(CROPDMGREAL))</code></pre></div>
+<p>In summary we find a total of 10791 fatalities and 136381 injuries. Furthermore, we find a total of 1057927616250 Dollars in property damage and a total of 1807269231390 Dollars in crop damage.</p>
+<p>Regarding the most harmful events to population health, we can show a barplot next. Threrefore, we get plot datasets <code>storm_sum</code> for fatalities and injuries grouped by event type. After ordering we use <code>ggplot</code> to construct the plots of the TOP 6.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">storm_sum &lt;-<span class="st"> </span>storm_convert <span class="op">%&gt;%</span>
+<span class="st">              </span><span class="kw">group_by</span>(EVTYPE) <span class="op">%&gt;%</span>
+<span class="st">              </span><span class="kw">summarise</span>(<span class="dt">FATALITIES =</span> <span class="kw">sum</span>(FATALITIES)) <span class="op">%&gt;%</span>
+<span class="st">              </span><span class="kw">arrange</span>(<span class="kw">desc</span>(FATALITIES))
+
+storm_sum<span class="op">$</span>EVTYPE &lt;-<span class="st"> </span><span class="kw">factor</span>(storm_sum<span class="op">$</span>EVTYPE, <span class="dt">levels =</span> storm_sum<span class="op">$</span>EVTYPE[<span class="kw">order</span>(storm_sum<span class="op">$</span>FATALITIES, <span class="dt">decreasing =</span> <span class="ot">TRUE</span>)])
+<span class="kw">ggplot</span>(<span class="dt">data =</span> <span class="kw">head</span>(storm_sum, <span class="dt">n =</span> <span class="dv">6</span>), <span class="kw">aes</span>(<span class="dt">x =</span> EVTYPE, <span class="dt">y =</span> FATALITIES)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_bar</span>(<span class="dt">stat =</span> <span class="st">&quot;identity&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">xlab</span>(<span class="st">&quot;Events&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">ylab</span>(<span class="st">&quot;Fatality Count&quot;</span>)</code></pre></div>
+<p><img src="pga_rr_files/figure-html/plot1-1.png" width="672" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">storm_sum &lt;-<span class="st"> </span>storm_convert <span class="op">%&gt;%</span>
+<span class="st">              </span><span class="kw">group_by</span>(EVTYPE) <span class="op">%&gt;%</span>
+<span class="st">              </span><span class="kw">summarise</span>(<span class="dt">INJURIES =</span> <span class="kw">sum</span>(INJURIES)) <span class="op">%&gt;%</span>
+<span class="st">              </span><span class="kw">arrange</span>(<span class="kw">desc</span>(INJURIES))
+
+storm_sum<span class="op">$</span>EVTYPE &lt;-<span class="st"> </span><span class="kw">factor</span>(storm_sum<span class="op">$</span>EVTYPE, <span class="dt">levels =</span> storm_sum<span class="op">$</span>EVTYPE[<span class="kw">order</span>(storm_sum<span class="op">$</span>INJURIES, <span class="dt">decreasing =</span> <span class="ot">TRUE</span>)])
+<span class="kw">ggplot</span>(<span class="dt">data =</span> <span class="kw">head</span>(storm_sum, <span class="dt">n =</span> <span class="dv">6</span>), <span class="kw">aes</span>(<span class="dt">x =</span> EVTYPE, <span class="dt">y =</span> INJURIES)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_bar</span>(<span class="dt">stat =</span> <span class="st">&quot;identity&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">xlab</span>(<span class="st">&quot;Events&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">ylab</span>(<span class="st">&quot;Injury Count&quot;</span>)</code></pre></div>
+<p><img src="pga_rr_files/figure-html/plot1-2.png" width="672" /></p>
+<p>Now we finish our results by showing the types of events that have the greatest economic consequences. For doing this, we sum up the damage values of property and crop with <code>mutate</code>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">storm_sum &lt;-<span class="st"> </span>storm_convert <span class="op">%&gt;%</span>
+<span class="st">              </span><span class="kw">mutate</span>(<span class="dt">TOTALREAL =</span> PROPDMGREAL <span class="op">+</span><span class="st"> </span>CROPDMGREAL) <span class="op">%&gt;%</span>
+<span class="st">              </span><span class="kw">group_by</span>(EVTYPE) <span class="op">%&gt;%</span>
+<span class="st">              </span><span class="kw">summarise</span>(<span class="dt">TOTALREAL =</span> <span class="kw">sum</span>(TOTALREAL)) <span class="op">%&gt;%</span>
+<span class="st">              </span><span class="kw">arrange</span>(<span class="kw">desc</span>(TOTALREAL))
+
+storm_sum<span class="op">$</span>EVTYPE &lt;-<span class="st"> </span><span class="kw">factor</span>(storm_sum<span class="op">$</span>EVTYPE, <span class="dt">levels =</span> storm_sum<span class="op">$</span>EVTYPE[<span class="kw">order</span>(storm_sum<span class="op">$</span>TOTALREAL, <span class="dt">decreasing =</span> <span class="ot">TRUE</span>)])
+<span class="kw">ggplot</span>(<span class="dt">data =</span> <span class="kw">head</span>(storm_sum, <span class="dt">n =</span> <span class="dv">6</span>), <span class="kw">aes</span>(<span class="dt">x =</span> EVTYPE, <span class="dt">y =</span> TOTALREAL)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_bar</span>(<span class="dt">stat =</span> <span class="st">&quot;identity&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">xlab</span>(<span class="st">&quot;Events&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">ylab</span>(<span class="st">&quot;Total Damage in Dollars&quot;</span>)</code></pre></div>
+<p><img src="pga_rr_files/figure-html/plot2-1.png" width="672" /></p>
+<p><strong>Conclusion:</strong><br />
+As the results show at first, tornados, flash floods, floods, heat, excessive heat and lightning are the most deadly weather events in decreasing order. That is the most severe factor regarding public health. Secondly, tornados, floods, heavy winds, hurricane typhoons, flash floods and heat are the main causes of weather-related injuries in decreasing order.</p>
+<p>When it comes to economic consequences, the picture slightly differs. Here the most severe weather events are hurricanes, hurricane typhoons, ice storms, floods, tornados and hails in decreasing order.</p>
+<hr />
+</div>
+</div>
+<div id="appendix" class="section level1">
+<h1>Appendix</h1>
+<div id="review-criteria" class="section level2">
+<h2>Review criteria</h2>
+<ol style="list-style-type: decimal">
+<li>Has either a (1) valid RPubs URL pointing to a data analysis document for this assignment been submitted; or (2) a complete PDF file presenting the data analysis been uploaded?</li>
+<li>Is the document written in English?</li>
+<li>Does the analysis include description and justification for any data transformations?</li>
+<li>Does the document have a title that briefly summarizes the data analysis?</li>
+<li>Does the document have a synopsis that describes and summarizes the data analysis in less than 10 sentences?</li>
+<li>Is there a section titled “Data Processing” that describes how the data were loaded into R and processed for analysis?</li>
+<li>Is there a section titled “Results” where the main results are presented?</li>
+<li>Is there at least one figure in the document that contains a plot?</li>
+<li>Are there at most 3 figures in this document?</li>
+<li>Does the analysis start from the raw data file (i.e. the original .csv.bz2 file)?</li>
+<li>Does the analysis address the question of which types of events are most harmful to population health?</li>
+<li>Does the analysis address the question of which types of events have the greatest economic consequences?</li>
+<li>Do all the results of the analysis (i.e. figures, tables, numerical summaries) appear to be reproducible?</li>
+<li>Do the figure(s) have descriptive captions (i.e. there is a description near the figure of what is happening in the figure)?</li>
+<li>As far as you can determine, does it appear that the work submitted for this project is the work of the student who submitted it?</li>
+</ol>
+<hr />
+</div>
+<div id="build-with" class="section level2">
+<h2>Build with</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sessionInfo</span>()</code></pre></div>
+<pre><code>## R version 3.4.4 (2018-03-15)
+## Platform: x86_64-pc-linux-gnu (64-bit)
+## Running under: Ubuntu 16.04.4 LTS
+## 
+## Matrix products: default
+## BLAS: /usr/lib/libblas/libblas.so.3.6.0
+## LAPACK: /usr/lib/lapack/liblapack.so.3.6.0
+## 
+## locale:
+##  [1] LC_CTYPE=de_DE.UTF-8       LC_NUMERIC=C              
+##  [3] LC_TIME=de_DE.UTF-8        LC_COLLATE=de_DE.UTF-8    
+##  [5] LC_MONETARY=de_DE.UTF-8    LC_MESSAGES=de_DE.UTF-8   
+##  [7] LC_PAPER=de_DE.UTF-8       LC_NAME=C                 
+##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+## [11] LC_MEASUREMENT=de_DE.UTF-8 LC_IDENTIFICATION=C       
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+##  [1] bindrcpp_0.2       forcats_0.2.0      stringr_1.2.0     
+##  [4] dplyr_0.7.4        purrr_0.2.4        readr_1.1.1       
+##  [7] tidyr_0.8.0        tibble_1.4.2       ggplot2_2.2.1     
+## [10] tidyverse_1.2.1    tufte_0.3          svglite_1.2.1     
+## [13] wordcloud_2.5      RColorBrewer_1.1-2 gdtools_0.1.7     
+## 
+## loaded via a namespace (and not attached):
+##  [1] xfun_0.1         slam_0.1-42      reshape2_1.4.3   haven_1.1.1     
+##  [5] lattice_0.20-35  colorspace_1.3-2 htmltools_0.3.6  yaml_2.1.15     
+##  [9] utf8_1.1.3       rlang_0.1.6      pillar_1.1.0     foreign_0.8-69  
+## [13] glue_1.2.0       modelr_0.1.1     readxl_1.0.0     bindr_0.1       
+## [17] plyr_1.8.4       munsell_0.4.3    gtable_0.2.0     cellranger_1.1.0
+## [21] rvest_0.3.2      codetools_0.2-15 psych_1.7.8      evaluate_0.10.1 
+## [25] labeling_0.3     knitr_1.19       parallel_3.4.4   highr_0.6       
+## [29] broom_0.4.3      Rcpp_0.12.15     backports_1.1.2  scales_0.5.0    
+## [33] jsonlite_1.5     mnormt_1.5-5     hms_0.4.1        digest_0.6.12   
+## [37] stringi_1.1.6    grid_3.4.4       rprojroot_1.3-2  cli_1.0.0       
+## [41] tools_3.4.4      magrittr_1.5     lazyeval_0.2.1   crayon_1.3.4    
+## [45] pkgconfig_2.0.1  xml2_1.2.0       lubridate_1.7.2  rstudioapi_0.7  
+## [49] assertthat_0.2.0 rmarkdown_1.8    httr_1.3.1       R6_2.2.2        
+## [53] nlme_3.1-131.1   compiler_3.4.4</code></pre>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,17 +1,42 @@
-name: "my-website"
+name: "homepage"
 navbar:
-  title: "My Website"
+  title: "LaHo_x"
   left:
     - text: "Home"
+      icon: fa-fort-awesome
       href: index.html
     - text: "About"
+      icon: fa-child 
       href: about.html
-    - text: "Word Cloud"
-      href: wordcloud.html
+    - text: "Mehr"
+      icon: fa-chevron-circle-down
+      menu:
+        - text: "R-Stuff"
+        - text: "Word Cloud"
+          href: wordcloud.html
+        - text: "NOAA Storm Database"
+          href: pga_rr.html
+        - text: "---------"
+        - text: "Was noch?"
+        - text: "Page C"
+          href: page_c.html
+        - text: "Page D"
+          href: page_d.html
+  right:
+    - icon: fa-github
+      href: https://github.com/kundex
+    - icon: fa-xing
+      href: https://www.xing.com/profile/Lars_Hofmann16
+
+
 output:
   html_document:
     highlight: pygments
     theme: sandstone
     toc: yes
     toc_float: true 
+  include:
+    after_body: footer.html
 output_dir: "."
+
+

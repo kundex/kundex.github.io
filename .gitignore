@@ -4,3 +4,6 @@
 .Ruserdata
 kundex.github.io.Rproj
 *.csv
+*.bz2
+pga_rr_cache
+pga_rr_files

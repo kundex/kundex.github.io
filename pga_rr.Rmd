@@ -1,0 +1,201 @@
+---
+title: 'Exploring the NOAA Storm Database focused on severe weather events'
+author: "Lars Hofmann"
+date: "March 4, 2018"
+---
+
+# Synopsis
+
+The U.S. National Oceanic and Atmospheric Administration's (NOAA) storm database is a suitable source for exploring major weather effects in order to priorize the right cases and related countermeasures. Looking at the consequences of severe weather conditions, we focus on population health and economic issues that are sufficiently measurable. It can be narrowed down to two key questions to be answered:
+
+**1.  Which types of weather events are most harmful with respect to population health?**  
+**2.  Which types of weather events have the greatest economic consequences?**
+
+The database mentioned above consists of a time series starting in the year 1950 and ending in November 2011. It forms a broad basis for our following analysis. This is carries out with R in a reproducible way, which means that every step of the data retrieval, reshaping calculation and presenting is completely comprehensible.
+
+Here we go..
+
+---
+
+## Setup
+
+```{r setup, warnings = FALSE, message = FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE, message = FALSE, warnings = FALSE)
+options(scipen=999) # non-scientific number format
+options(digits=2) # round to 2 decimal places
+library(tidyverse) # includes ggplot2, tibble, tidyr, readr, purrr, dplyr
+```
+
+---
+
+## Data Processing
+
+### Raw Data Retrival
+
+The data for this assignment come in the form of a comma-separated-value file compressed via the bzip2 algorithm. At the first step, we need to retrieve the raw data from the online source and decompress it to a raw dataset called `storm_raw`. Due to the size of the data, we use the more efficient method `read_csv` from the `tidyverse` package to import the data as a tibble. Moreover, we use `cache = TRUE` as standard chunk set.
+
+```{r retrieve, results = "hide"}
+if(!file.exists("StormData.csv.bz2")){
+url <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2"
+download.file(url, destfile = "StormData.csv.bz2", method = "curl")
+date_storm_raw <- format(Sys.time(), "%a %d %b %Y %X")
+}
+
+storm_raw <- read_csv(bzfile("./StormData.csv.bz2"))
+
+```
+
+### Check Import
+
+Secondly, we want to check the import. 
+
+```{r check}
+class(storm_raw)
+names(storm_raw)
+head(storm_raw, n = 3)
+str(storm_raw)
+```
+
+At a first glance, everything looks properly imported. We've got a tibble with `r dim(storm_raw)[1]` observations of `r dim(storm_raw)[2]` variables. Every variable seems to be labeled.
+
+### Select relevant variables
+
+Refering to our research questions, we identify all relevant vaiables derived from `names()` and the online documentation provided above. We cut them into the dataset `storm_select` via `select` using a single pipe.
+
+```{r select, results = "hide"}
+storm_select <- storm_raw %>% select("EVTYPE", "FATALITIES", "INJURIES", "PROPDMG", "PROPDMGEXP", "CROPDMG", "CROPDMGEXP")
+```
+
+The new dataset consists of only `r dim(storm_select)[2]` variables, i. e.: 
+
+- event type, 
+- fatalities, 
+- injuries, 
+- property damage, 
+- property damage exponent, 
+- crop damage and 
+- crop damage exponent.
+
+### Convert damage codes into real expenses
+
+To do so, we initiate a loop --- one for property and one for crop --- and input the code-value pairs (from variable `PROPDMGEXP` and `CROPDMGEXP`, resp.), e. g. `H100` means code "H" that stands for "factor hundred". By this, we are able to calculate the resulting variable "PROPDMGREAL" with only one loop using the method `substr`. The calculation is a simple multiplication with the variables `PROPDMG` and `CROPDMG`, resp. Inside the loop, the parts are binded into a new dataset `storm_convert` that is initiated in advance. Last but not least, we tidy up some patterns in variable `EVTYPE`.
+
+```{r convert, results = "hide"}
+storm_convert = NULL
+
+for(n in c("H100", "K1000", "M1000000", "B1000000000")) {
+  part <- storm_select %>% 
+          filter(PROPDMGEXP == substr(n, 1, 1) | CROPDMGEXP == substr(n, 1, 1)) %>%
+          mutate(PROPDMGREAL = PROPDMG * as.numeric(substr(n, 2, nchar(n)))) %>%
+          mutate(CROPDMGREAL = CROPDMG * as.numeric(substr(n, 2, nchar(n))))
+  
+  storm_convert <- rbind(storm_convert, part)
+}
+
+ev_types <- tolower(storm_convert$EVTYPE)
+ev_types <- gsub("[[:blank:][:punct:]+]", " ", ev_types)
+storm_convert$EVTYPE <- ev_types
+
+```
+
+In result, we've got got a tibble `storm_convert` with `r dim(storm_convert)[1]` observations of `r dim(storm_convert)[2]` variables. In the last data processing step, we remove the dataset that are not needed any more, and have a look at our neat processed tibble to go further. 
+
+```{r remove}
+rm(storm_raw)
+rm(storm_select)
+
+class(storm_convert)
+names(storm_convert)
+head(storm_convert, n = 3)
+str(storm_convert)
+```
+
+---
+
+##  Results
+
+Here we are going to present the results by following two major questions:
+
+**1.  Across the United States, which types of events (as indicated in the EVTYPE variable) are most harmful with respect to population health?**
+
+**2.  Across the United States, which types of events have the greatest economic consequences?**
+
+First of it, we summarise the processed data types using `summarise`:
+
+```{r sum, results = "hide"}
+storm_convert %>% summarise(sum(FATALITIES))
+storm_convert %>% summarise(sum(INJURIES))
+
+storm_convert %>% summarise(sum(PROPDMGREAL))
+storm_convert %>% summarise(sum(CROPDMGREAL))
+```
+
+In summary we find a total of `r storm_convert %>% summarise(sum(FATALITIES))` fatalities and `r storm_convert %>% summarise(sum(INJURIES))` injuries.
+Furthermore, we find a total of `r storm_convert %>% summarise(sum(PROPDMGREAL))` Dollars in property damage and a total of `r storm_convert %>% summarise(sum(CROPDMGREAL))` Dollars in crop damage.
+
+Regarding the most harmful events to population health, we can show a barplot next. Threrefore, we get plot datasets `storm_sum` for fatalities and injuries grouped by event type. After ordering we use `ggplot` to construct the plots of the TOP 6.
+
+```{r plot1}
+storm_sum <- storm_convert %>%
+              group_by(EVTYPE) %>%
+              summarise(FATALITIES = sum(FATALITIES)) %>%
+              arrange(desc(FATALITIES))
+
+storm_sum$EVTYPE <- factor(storm_sum$EVTYPE, levels = storm_sum$EVTYPE[order(storm_sum$FATALITIES, decreasing = TRUE)])
+ggplot(data = head(storm_sum, n = 6), aes(x = EVTYPE, y = FATALITIES)) + geom_bar(stat = "identity") + xlab("Events") + ylab("Fatality Count")
+
+storm_sum <- storm_convert %>%
+              group_by(EVTYPE) %>%
+              summarise(INJURIES = sum(INJURIES)) %>%
+              arrange(desc(INJURIES))
+
+storm_sum$EVTYPE <- factor(storm_sum$EVTYPE, levels = storm_sum$EVTYPE[order(storm_sum$INJURIES, decreasing = TRUE)])
+ggplot(data = head(storm_sum, n = 6), aes(x = EVTYPE, y = INJURIES)) + geom_bar(stat = "identity") + xlab("Events") + ylab("Injury Count")
+```
+
+Now we finish our results by showing the types of events that have the greatest economic consequences. For doing this, we sum up the damage values of property and crop with `mutate`.
+
+```{r plot2}
+storm_sum <- storm_convert %>%
+              mutate(TOTALREAL = PROPDMGREAL + CROPDMGREAL) %>%
+              group_by(EVTYPE) %>%
+              summarise(TOTALREAL = sum(TOTALREAL)) %>%
+              arrange(desc(TOTALREAL))
+
+storm_sum$EVTYPE <- factor(storm_sum$EVTYPE, levels = storm_sum$EVTYPE[order(storm_sum$TOTALREAL, decreasing = TRUE)])
+ggplot(data = head(storm_sum, n = 6), aes(x = EVTYPE, y = TOTALREAL)) + geom_bar(stat = "identity") + xlab("Events") + ylab("Total Damage in Dollars")
+```
+
+**Conclusion:**  
+As the results show at first, tornados, flash floods, floods, heat, excessive heat and lightning are the most deadly weather events in decreasing order. That is the most severe factor regarding public health. Secondly, tornados, floods, heavy winds, hurricane typhoons, flash floods and heat are the main causes of weather-related injuries in decreasing order.
+
+When it comes to economic consequences, the picture slightly differs. Here the most severe weather events are hurricanes, hurricane typhoons, ice storms, floods, tornados and hails in decreasing order.
+
+---
+
+# Appendix
+
+## Review criteria
+
+1. Has either a (1) valid RPubs URL pointing to a data analysis document for this assignment been submitted; or (2) a complete PDF file presenting the data analysis been uploaded?
+2. Is the document written in English?
+3. Does the analysis include description and justification for any data transformations?
+4. Does the document have a title that briefly summarizes the data analysis?
+5. Does the document have a synopsis that describes and summarizes the data analysis in less than 10 sentences?
+6. Is there a section titled "Data Processing" that describes how the data were loaded into R and processed for analysis?
+7. Is there a section titled "Results" where the main results are presented?
+8. Is there at least one figure in the document that contains a plot?
+9. Are there at most 3 figures in this document?
+10.  Does the analysis start from the raw data file (i.e. the original .csv.bz2 file)?
+11.  Does the analysis address the question of which types of events are most harmful to population health?
+12.  Does the analysis address the question of which types of events have the greatest economic consequences?
+13.  Do all the results of the analysis (i.e. figures, tables, numerical summaries) appear to be reproducible?
+14.  Do the figure(s) have descriptive captions (i.e. there is a description near the figure of what is happening in the figure)?
+15.  As far as you can determine, does it appear that the work submitted for this project is the work of the student who submitted it?
+
+---
+
+## Build with
+```{r info, cache =FALSE}
+sessionInfo()
+```
