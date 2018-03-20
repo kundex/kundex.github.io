@@ -8,7 +8,10 @@ navbar:
       href: about.html
     - text: "Word Cloud"
       href: wordcloud.html
-output: 
-  tufte::tufte_html: default
-  dev: "svglite"
+output:
+  html_document:
+    highlight: pygments
+    theme: sandstone
+    toc: yes
+    toc_float: true 
 output_dir: "."
