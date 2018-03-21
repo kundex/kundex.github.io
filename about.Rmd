@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 ---
 
 ```{r, echo = FALSE, out.width = "30%", fig.align="left"}
-knitr::include_graphics("/port.png")
+knitr::include_graphics("port.png")
 ```
 
 ======================
