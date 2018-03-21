@@ -1,10 +1,12 @@
 ---
-title: "About"
+title: "Über"
 author: "Lars Hofmann"
 date: "`r Sys.Date()`"
 ---
 
-# Über mich
+```{r, echo = FALSE, out.width = "30%", fig.align="left"}
+knitr::include_graphics("port.png")
+```
 
 ======================
 
@@ -13,3 +15,7 @@ Wie gesagt, hier ist noch nix los.
 Aber das wird noch ..
 
 Zu mir gibt es noch was auf [`xing`](https://www.xing.com/profile/Lars_Hofmann16) zu erfahren.
+
+Mails werden gern gelesen über `lars[PUNKT]hofmann[AT]posteo[PUNKT]de`. PGP-Mails bitte mit [`diesem Schlüssel`](https://pgp.mit.edu/pks/lookup?op=get&search=0xA61035380ED543EC) verschlüsseln.
+
+Fingerprint: `BB65 421F B2D5 F55D 43A9 EAAF A610 3538 0ED5 43EC`.

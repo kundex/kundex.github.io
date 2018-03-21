@@ -2,24 +2,24 @@ name: "homepage"
 navbar:
   title: "LaHo_x"
   left:
-    - text: "Home"
+    - text: "Basis"
       icon: fa-fort-awesome
       href: index.html
-    - text: "About"
+    - text: "Über"
       icon: fa-child 
       href: about.html
-    - text: "Mehr"
+    - text: "Themen"
       icon: fa-chevron-circle-down
       menu:
-        - text: "R-Stuff"
+        - text: "R-Codes"
         - text: "Word Cloud"
           href: wordcloud.html
+        - text: "Page B"
+          href: page_b.html
+        - text: "---------"
+        - text: "Data Science @coursera"
         - text: "NOAA Storm Database"
           href: pga_rr.html
-        - text: "---------"
-        - text: "Was noch?"
-        - text: "Page C"
-          href: page_c.html
         - text: "Page D"
           href: page_d.html
   right:
@@ -35,8 +35,8 @@ output:
     theme: sandstone
     toc: yes
     toc_float: true 
-  include:
-    after_body: footer.html
+    includes:
+      after_body: footer.html
 output_dir: "."
 
 
