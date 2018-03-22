@@ -12,8 +12,6 @@ knitr::include_graphics("port.png")
 
 Wie gesagt, hier ist noch nix los.
 
-Aber das wird noch ..
-
 Zu mir gibt es noch was auf [`xing`](https://www.xing.com/profile/Lars_Hofmann16) zu erfahren.
 
 Mails werden gern gelesen über `lars[PUNKT]hofmann[AT]posteo[PUNKT]de`. PGP-Mails bitte mit [`diesem Schlüssel`](https://pgp.mit.edu/pks/lookup?op=get&search=0xA61035380ED543EC) verschlüsseln.

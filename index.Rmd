@@ -14,5 +14,5 @@ knitr::include_graphics("line.svg")
 
 # Hallo !
 
-Herzlich willkommen auf meinen privaten Seiten. Hier befindet sich derzeit noch alles im Experimentierstaduim. Daher kannst Du nur unter bestimmten Umständen etwas Interessantes finden.
+Herzlich willkommen auf meinen privaten Seiten. Hier befindet sich derzeit noch alles im Experimentierstadium. Daher kannst Du nur unter bestimmten Umständen etwas Interessantes finden.
 
