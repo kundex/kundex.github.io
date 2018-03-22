@@ -8,17 +8,17 @@ navbar:
     - text: "Über"
       icon: fa-child 
       href: about.html
-    - text: "Themen"
-      icon: fa-chevron-circle-down
+    - text: "R zählmalwas"
+      icon: fa-terminal
       menu:
-        - text: "R-Codes"
-        - text: "Word Cloud"
+        - text: "R schaffen"
+        - text: "2018-03-15 Word Cloud"
           href: wordcloud.html
         - text: "Page B"
           href: page_b.html
         - text: "---------"
-        - text: "Data Science @coursera"
-        - text: "NOAA Storm Database"
+        - text: "R lernen @coursera"
+        - text: "2018-03-04 NOAA Storm Database"
           href: pga_rr.html
         - text: "Page D"
           href: page_d.html
