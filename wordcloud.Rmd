@@ -1,5 +1,5 @@
 ---
-title: "Word Cloud-Generator für die Veröffentlichungsdatenbanken <br>bei IT.NRW"
+title: "Word Cloud-Generator für die Veröffentlichungsdatenbanken <br>von IT.NRW"
 author: "Lars Hofmann"
 date: "March 15, 2018"
 ---
