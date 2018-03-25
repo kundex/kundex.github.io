@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 knitr::include_graphics("line.svg")
 ```
 
-# Hallo !
+======================
 
 Herzlich willkommen auf meinen persönlichen/privaten Webseiten. Hier befindet sich das meiste im Experimentierstadium. Daher kannst Du nur vielleicht etwas Interessantes finden. 
 
