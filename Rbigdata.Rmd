@@ -1,0 +1,185 @@
+---
+title: "Big Data mit R Desktop?"
+author: "Lars Hofmann"
+date: "`r Sys.Date()`"
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, cache = FALSE)
+library(tidyverse)
+```
+
+# Grenzbestimmung
+
+**Big Data** --- oder **Neue digitale Daten**, wie es in der deutschen amtlichen Statistik heißt --- sind nicht erst seit heute in vieler Munde. Große Datenmengen in diesem Sinne bedeuten eine immense Hochskalierung von Speichern, Methoden und Werkzeugen gegenüber "traditionellen" Datenmengen. Nun beschäftige ich mich hier nicht mit neueren Big Data-Frameworks oder Cloud Computing, sondern eher mit kleinskaligen, "normalen" R-Geschichten. Mich interessiert also, wo so ungefähr die Grenze verläuft --- von Big Data für "normale" Nutzer, die sich mit R und Statistik beschäftigen.
+
+Im *normalen* Desktop-Gebrauch von R mit RStudio, d. h. ohne Client-Server-Architektur oder Cloud Computing, werden alle Prozesse im Hautspeicher (RAM) erledigt. Alle Importdaten, R-Objekte, sowie die für die Ergebnisse benötigten Rechenkapazitäten nehmen als `R Environments` diesen Hauptspeicher ein. Doch dieser ist auch bei modernen Rechnern begrenzt.
+
+Ich arbeite mit einem recht modernen, trotzdem handelsüblichen Laptop: 
+
+* Ubuntu-Betriebssystem 64 bit
+* Intel i7-6700HQ mit 2,60GHz 
+* 16 GByte RAM
+* schnelle SSD-Festplatte
+
+Eins vorweg: Wie sich schon aus dem Gesagten ergibt, ist der RAM das ausschlaggebende Nadelöhr. Die vorgestellten Ergebnisse lassen sich wahrscheinlich allein mit diesem Einflussfaktor linear hochrechnen.
+
+# Datenbeschaffung
+
+Zunächst benötigen wir eine "Big Open Data"-Quelle. Im deutschsprachigem Raum gar nicht so einfach. Ohne langes Suchen nutze ich eine Quelle der American Statistical Association (ASA), die große offene Daten zu [Airline On-Time Statistics and Delay Causes](http://stat-computing.org/dataexpo/2009/the-data.html) bereitstellt. In der Kurzbeschreibung heißt es:
+
+>The data consists of flight arrival and departure details for all commercial flights within the USA, from October 1987 to April 2008. This is a large dataset: there are nearly 120 million records in total, and takes up 1.6 gigabytes of space compressed and 12 gigabytes when uncompressed. 
+
+Es handelt sich also um Daten zu **allen (!)** kommerziellen US-amerikanischen Inlandflügen in gut 20 Jahren. Aufgrund dieser Masse beschränken wir uns auf einen Ausschnitt von 2003 bis 2008, also einen Zeitraum von sechs Jahren (...ja, ich habe es mit allen versucht...).
+
+Die Daten sind bz2-komprimiert nach Jahren verfügbar (Kompressionsfaktor: ~6) und werden mit dem folgenden R-Code beschafft. Das Gesamtvolumen beträgt ca. 0,67 GByte (komprimiert) bzw. ca. 4,00 GByte (Rohdaten). Um unnötige Downloads zu vermeiden, wird grundsätzlich mit `file.exists` geprüft, ob benötigte Eingangsdateien in dem zugewiesenen Unterordner `daten` bereits vorhanden sind. Fehlende Dateien werden anschließend heruntergeladen. 
+
+```{r retrieve, results = "hide"}
+for(i in 2003:2008){
+  if(!file.exists(paste("daten/",i,".csv.bz2",sep=""))){
+    url <- paste("http://stat-computing.org/dataexpo/2009/",i,".csv.bz2", sep = "")
+    download.file(url, destfile = paste("daten/",i,".csv.bz2",sep=""))
+    }
+}
+```
+
+Die Dateigröße gibt uns eine erste Einordnung, wo die Grenze der Nutzbarkeit von Big Data auf normalen Laptop/PC-Systemen grob liegt: im **GByte-Bereich**. Wer "richtig" Big Data macht, bewegt sich eher im Terabyte-Bereich (1 TByte = 1.024 GByte) oder gar im Petabyte-Bereich (1 PByte = 1.024 TByte = 1.048.576 GigaByte).
+
+#  Kurzer Gedanke zur Datendichte
+
+Als`Datendichte` bezeichne ich den theoretischen Wert aus dem **Verhältnis von Information und Overhead**. Die Information ist der konkrete Datenwert, der Overhead ist alles andere, was Platz belegt (Metadaten, Trennzeichen). Hier ein rudimentäres Beispiel:
+
+**CSV-Datei**
+
+`ID;Jahr;Alter;Religion;Anzahl`  
+`1;2018;35;2;500`
+
+Die reine Information ist `2018`, `35`, `2` und `500`. Alle anderen Zeichen sind in diesem Sinne der Overhead.
+
+Betrachten wir mit diesem Beispiel einige andere typische Datenformate und deren Overhead:
+
+**YAML-Datei** ("YAML Ain’t Markup Language")
+
+`---`  
+`ID: 1`  
+`Jahr: 2018`  
+`Alter: 35`  
+`Religion: 2`  
+`Anzahl: 500`  
+
+**JSON-Datei** ("JavaScript Object Notation")
+
+`{`  
+    `"ID": 1,`  
+    `"Jahr": "2018",`  
+    `"Alter": 35,`  
+    `"Religion": 2,`  
+    `"Anzahl": 500`  
+`}`  
+
+**XML-Datei** ("Extensible Markup Language")
+
+`<ID>1</ID>`  
+`<Jahr>2018</Jahr>`  
+`<Alter>35</Alter>`  
+`<Religion>2</Religion>`  
+`<Anzahl>500</Anzahl>`  
+
+* CSV: 44 Zeichen mit Kopfzeile, 15 Zeichen ohne Kopfzeile
+* YAML: 49 Zeichen
+* JSON: 64 Zeichen
+* XML: 90 Zeichen
+
+Die Liste ist nach zunehmender Zeichenanzahl bei gleichem Informationsinhalt, also nach abnehmender *Datendichte* sortiert. Es ist daraus zu schließen, dass *auf Zeichenebene*  im Beispiel das CSV-Format im Vergleich zum XML-Format nur ein Siebtel des Platzes bei gleichem Informationsinhalt benötigt (die Kopfzeile ist nur einmal deklariert und daher vernachlässigbar).
+
+Natürlich greift dieser Vergleich sehr kurz; die Vorteile und Anwendungsmöglichkeiten der jeweiligen Datenformate ist hier nicht das Thema. Für meine Zwecke zählt an dieser Stelle nur, dass die verwendeten Eingangsdaten in CSV bei begrenzten Ressourcen ein Maximum an Datendichte bzw. an Informationsmenge beinhalten.
+
+# R Base vs. Tidyverse
+
+Ich vergleiche drei Methoden miteinander: 
+
+* die R Base-Methode `read.csv`, 
+* die optimierte Methode `read_csv` aus der `Tidyverse`-Paketsammlung mit der optimierten `map_df`-Funktion des sogenannten *functional programming toolkits* `purrr`, und
+* die gleiche optimierte Methode, aber mit direkter Anwendung der `bind_rows`-Funktion (die auch von `map_df` genutzt wird)
+
+Alle drei Methoden können komprimmierte Rohdaten (z. B. ".zip" oder ".bz2") direkt entpacken und einlesen. Leider ist das kein unerheblicher Aufwand, der eine Menge Laufzeit frisst. Es läge also nahe, die Dekompression vorzulagern, was wiederum hinsichtlich Reproduzierbarkeit nachteilig ist. Ich vergleiche darum alle Methoden mit und ohne Dekompression, zeige aber nur den kompakteren und reproduzierbaren Code mit der komprimierten Variante der Rohdaten.
+
+Die nach `test_import` importierten Daten müssen nach jedem Vorgang mit `rm()` gelöscht werden, um den RAM frei zu machen. Alle Variablen werden auf den Datentyp `character` fixiert. Das erfordert den minimalen Importaufwand, weil die Daten nicht umformatiert werden müssen. Ohne diesen Schritt würden *alle* Methoden aufgrund der Datenmenge beim "Rowbinding" mit Fehlern abbrechen.
+
+Die Laufzeit wird wie üblich mit der Funktion `system.time` unter Einsatz eines einfachen Zählers `x` gemessen. Der gekapselte Code dazwischen ist sozusagen der Prozess, dessen Laufzeit gemessen wird.
+
+```{r vgl1, eval = FALSE}
+system.time({
+  test_import <- list.files(path = "daten", full.names = TRUE) %>% 
+    lapply(read.csv, colClasses = "character") %>% 
+    bind_rows
+  x <- 1:100000
+  for (i in seq_along(x))  x[i] <- x[i]+1
+  })
+
+rm(test_import)
+```
+     
+```{r vgl2, eval = FALSE}
+import_func <- function(dat) {
+    read_csv(dat, col_types = cols(.default = col_character()))
+}
+
+system.time({
+  test_import <- list.files("daten", full.names = TRUE) %>% 
+                map_df(~import_func(.))
+  x <- 1:100000
+  for (i in seq_along(x))  x[i] <- x[i]+1
+  })
+
+rm(test_import)
+```
+
+```{r vgl3, eval = FALSE}
+system.time({
+  test_import <- list.files(path = "daten", full.names = TRUE) %>% 
+    lapply(read_csv, col_types = cols(.default = col_character())) %>% 
+    bind_rows
+  x <- 1:100000
+  for (i in seq_along(x))  x[i] <- x[i]+1
+  })
+
+dim(test_import)
+```
+
+# Testergebnisse
+
+Es werden in jedem Importprozess 42.363.271 Datenzeilen mit je 29 Variablen, also insgesamt **1.228.534.859 (~ 1,2 Mrd.) Werte** eingelesen. Die Speicherauslastung kommt dabei auf jeweils über 95 % bei 16 GByte RAM. Die Spitze wird nach dem Einlesen im Prozess des "Rowbindings" erreicht. In dem genutzten technischen Setting bilden die sechs genutzten Dateien die physikalische Grenze der verarbeitbaren Datenmenge. Die Ergebnisse der Laufzeitmessung sind wie folgt:
+
+| Methode | komprimiert (ja/nein) | Laufzeit (sek) |
+|-|-|-|
+|read.csv|ja|1011|
+|read_csv mit map_df|ja|511|
+|read_csv mit bind_rows|ja|491|
+|read.csv|nein|383|
+|read_csv mit map_df|nein|211|
+|read_csv mit bind_rows|nein|205|
+
+Anschließend möchte ich testen, wie R mit diesem *Riesen-Tibble* umgehen kann. Ich stelle eine einfache Auswertung in der folgenden Tabelle dar. Das Tibble wird hierfür nach `Year` gruppiert und anschließend nach zwei Merkmalen ausgewertet: die Anzahl der eingesetzten Flugzeuge nach eindeutiger Tail Number `n_distinct(TailNum)` sowie die jährliche Gesamtzahl der Flüge `n()`.
+
+```{r auswertung, eval = FALSE}
+knitr::kable(
+  test_import %>% 
+    group_by(Year) %>% 
+    summarize(n_distinct(TailNum), n()), 
+  format.args = list(decimal.mark = ",", big.mark = "."), 
+  caption = "Zusammenfassung der Anzahl der eingesetzten Flugzeuge nach eindeutiger Tail Number sowie jährliche Gesamtzahl der Flüge")
+```
+
+#  Fazit
+
+Mit einem cleveren Management von Im-/Export und den geeigneten Methoden/R-Paketen können auch mit R-Desktop Big Data-Probleme in einer begrenzten Größenordnung angegangen werden. Je größer die Datenmenge, desto wichtiger ist das genutzte Datenformat hinsichtlich Dateigröße und Parsing-Aufwand. Auf einen Formatvergleich in der Verarbeitung habe ich hier verzichtet. Vielleicht teste ich das später einmal aus.
+
+Die optimierte Methode `read_csv` ist gegenüber der Basismethode `read.csv` weitaus effizienter. Der CSV-Import läuft in fast der doppelten Geschwindigkeit ab. Kommt der Dekomprimierungsprozess beim Import hinzu, läuft die optimierte Variante sogar mehr als doppelt so schnell. Der "funktionalere Ansatz" mit `map_df` ist gegenüber `lapply` / `bind_rows` leicht unterlegen, aber vergleichbar effizient.
+
+Sind die Daten erst einmal als Tibble eingelesen, laufen einfache Analysefunktionen (z. B. `n()` oder `sum()`) und Gruppierungen mit `group_by()` erstaunlich effizient ab. Es spielt hier keine spürbare Rolle, wie groß der betrachtete Datensatz ist. Mit der Weiterverarbeitung von "Big Data mit R Desktop" will ich mich später bei Gelegenheit vertiefend beschäftigen...
+
+# Anhang: Build with
+```{r info, cache =FALSE}
+sessionInfo()
+```

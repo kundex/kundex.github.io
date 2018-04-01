@@ -12,16 +12,14 @@ navbar:
       icon: fa-terminal
       menu:
         - text: "R schaffen"
+        - text: "2018-04-01 R-Big Data"
+          href: Rbigdata.html
         - text: "2018-03-15 Word Cloud"
           href: wordcloud.html
-        - text: "Page B"
-          href: page_b.html
         - text: "---------"
         - text: "R lernen @coursera"
         - text: "2018-03-04 NOAA Storm Database"
           href: pga_rr.html
-        - text: "Page D"
-          href: page_d.html
   right:
     - icon: fa-github
       href: https://github.com/kundex
@@ -34,7 +32,7 @@ output:
     highlight: pygments
     theme: sandstone
     toc: yes
-    toc_float: true 
+    toc_float: true
     includes:
       after_body: footer.html
 output_dir: "."

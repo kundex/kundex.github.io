@@ -1,5 +1,5 @@
 ---
-title: "R, RStudio, Markdown und sonst so .."
+title: "R, RMarkdown und Reproducible Research"
 author: "Lars Hofmann"
 date: "`r Sys.Date()`"
 ---
@@ -14,5 +14,5 @@ knitr::include_graphics("line.svg")
 
 ======================
 
-Herzlich willkommen auf meinen persönlichen/privaten Webseiten. Hier befindet sich das meiste im Experimentierstadium. Daher kannst Du nur vielleicht etwas Interessantes finden. 
+Herzlich willkommen auf meinen persönlichen Webseiten. Hier dreht sich eigentlich alles um R, RMarkdown und Reproducible Research im Experimentierstadium. Aber vielleicht findest Du ja etwas Interessantes. 
 
