@@ -383,6 +383,7 @@ div.tocify {
 <li>schnelle SSD-Festplatte</li>
 </ul>
 <p>Eins vorweg: Wie sich schon aus dem Gesagten ergibt, ist der RAM das ausschlaggebende Nadelöhr. Die vorgestellten Ergebnisse lassen sich wahrscheinlich allein mit diesem Einflussfaktor linear hochrechnen.</p>
+<hr />
 </div>
 <div id="datenbeschaffung" class="section level1">
 <h1>Datenbeschaffung</h1>
@@ -399,9 +400,9 @@ div.tocify {
     }
 }</code></pre></div>
 <p>Die Dateigröße gibt uns eine erste Einordnung, wo die Grenze der Nutzbarkeit von Big Data auf normalen Laptop/PC-Systemen grob liegt: im <strong>GByte-Bereich</strong>. Wer “richtig” Big Data macht, bewegt sich eher im Terabyte-Bereich (1 TByte = 1.024 GByte) oder gar im Petabyte-Bereich (1 PByte = 1.024 TByte = 1.048.576 GigaByte).</p>
-</div>
-<div id="kurzer-gedanke-zur-datendichte" class="section level1">
-<h1>Kurzer Gedanke zur Datendichte</h1>
+<hr />
+<div id="kurzer-gedanke-zur-datendichte" class="section level2">
+<h2>Kurzer Gedanke zur Datendichte</h2>
 <p>Als<code>Datendichte</code> bezeichne ich den theoretischen Wert aus dem <strong>Verhältnis von Information und Overhead</strong>. Die Information ist der konkrete Datenwert, der Overhead ist alles andere, was Platz belegt (Metadaten, Trennzeichen). Hier ein rudimentäres Beispiel:</p>
 <p><strong>CSV-Datei</strong></p>
 <p><code>ID;Jahr;Alter;Religion;Anzahl</code><br />
@@ -437,9 +438,10 @@ div.tocify {
 </ul>
 <p>Die Liste ist nach zunehmender Zeichenanzahl bei gleichem Informationsinhalt, also nach abnehmender <em>Datendichte</em> sortiert. Es ist daraus zu schließen, dass <em>auf Zeichenebene</em> im Beispiel das CSV-Format im Vergleich zum XML-Format nur ein Siebtel des Platzes bei gleichem Informationsinhalt benötigt (die Kopfzeile ist nur einmal deklariert und daher vernachlässigbar).</p>
 <p>Natürlich greift dieser Vergleich sehr kurz; die Vorteile und Anwendungsmöglichkeiten der jeweiligen Datenformate ist hier nicht das Thema. Für meine Zwecke zählt an dieser Stelle nur, dass die verwendeten Eingangsdaten in CSV bei begrenzten Ressourcen ein Maximum an Datendichte bzw. an Informationsmenge beinhalten.</p>
+<hr />
 </div>
-<div id="r-base-vs.tidyverse" class="section level1">
-<h1>R Base vs. Tidyverse</h1>
+<div id="r-base-vs.tidyverse" class="section level2">
+<h2>R Base vs. Tidyverse</h2>
 <p>Ich vergleiche drei Methoden miteinander:</p>
 <ul>
 <li>die R Base-Methode <code>read.csv</code>,</li>
@@ -479,6 +481,8 @@ div.tocify {
   })
 
 <span class="kw">dim</span>(test_import)</code></pre></div>
+<hr />
+</div>
 </div>
 <div id="testergebnisse" class="section level1">
 <h1>Testergebnisse</h1>
@@ -531,6 +535,7 @@ div.tocify {
 <span class="st">    </span><span class="kw">summarize</span>(<span class="kw">n_distinct</span>(TailNum), <span class="kw">n</span>()), 
   <span class="dt">format.args =</span> <span class="kw">list</span>(<span class="dt">decimal.mark =</span> <span class="st">&quot;,&quot;</span>, <span class="dt">big.mark =</span> <span class="st">&quot;.&quot;</span>), 
   <span class="dt">caption =</span> <span class="st">&quot;Zusammenfassung der Anzahl der eingesetzten Flugzeuge nach eindeutiger Tail Number sowie jährliche Gesamtzahl der Flüge&quot;)</span></code></pre></div>
+<hr />
 </div>
 <div id="fazit" class="section level1">
 <h1>Fazit</h1>

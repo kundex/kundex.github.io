@@ -24,6 +24,8 @@ Ich arbeite mit einem recht modernen, trotzdem handelsüblichen Laptop:
 
 Eins vorweg: Wie sich schon aus dem Gesagten ergibt, ist der RAM das ausschlaggebende Nadelöhr. Die vorgestellten Ergebnisse lassen sich wahrscheinlich allein mit diesem Einflussfaktor linear hochrechnen.
 
+---
+
 # Datenbeschaffung
 
 Zunächst benötigen wir eine "Big Open Data"-Quelle. Im deutschsprachigem Raum gar nicht so einfach. Ohne langes Suchen nutze ich eine Quelle der American Statistical Association (ASA), die große offene Daten zu [Airline On-Time Statistics and Delay Causes](http://stat-computing.org/dataexpo/2009/the-data.html) bereitstellt. In der Kurzbeschreibung heißt es:
@@ -45,7 +47,9 @@ for(i in 2003:2008){
 
 Die Dateigröße gibt uns eine erste Einordnung, wo die Grenze der Nutzbarkeit von Big Data auf normalen Laptop/PC-Systemen grob liegt: im **GByte-Bereich**. Wer "richtig" Big Data macht, bewegt sich eher im Terabyte-Bereich (1 TByte = 1.024 GByte) oder gar im Petabyte-Bereich (1 PByte = 1.024 TByte = 1.048.576 GigaByte).
 
-#  Kurzer Gedanke zur Datendichte
+---
+
+##  Kurzer Gedanke zur Datendichte
 
 Als`Datendichte` bezeichne ich den theoretischen Wert aus dem **Verhältnis von Information und Overhead**. Die Information ist der konkrete Datenwert, der Overhead ist alles andere, was Platz belegt (Metadaten, Trennzeichen). Hier ein rudimentäres Beispiel:
 
@@ -94,7 +98,9 @@ Die Liste ist nach zunehmender Zeichenanzahl bei gleichem Informationsinhalt, al
 
 Natürlich greift dieser Vergleich sehr kurz; die Vorteile und Anwendungsmöglichkeiten der jeweiligen Datenformate ist hier nicht das Thema. Für meine Zwecke zählt an dieser Stelle nur, dass die verwendeten Eingangsdaten in CSV bei begrenzten Ressourcen ein Maximum an Datendichte bzw. an Informationsmenge beinhalten.
 
-# R Base vs. Tidyverse
+---
+
+## R Base vs. Tidyverse
 
 Ich vergleiche drei Methoden miteinander: 
 
@@ -147,6 +153,8 @@ system.time({
 dim(test_import)
 ```
 
+---
+
 # Testergebnisse
 
 Es werden in jedem Importprozess 42.363.271 Datenzeilen mit je 29 Variablen, also insgesamt **1.228.534.859 (~ 1,2 Mrd.) Werte** eingelesen. Die Speicherauslastung kommt dabei auf jeweils über 95 % bei 16 GByte RAM. Die Spitze wird nach dem Einlesen im Prozess des "Rowbindings" erreicht. In dem genutzten technischen Setting bilden die sechs genutzten Dateien die physikalische Grenze der verarbeitbaren Datenmenge. Die Ergebnisse der Laufzeitmessung sind wie folgt:
@@ -171,6 +179,8 @@ knitr::kable(
   caption = "Zusammenfassung der Anzahl der eingesetzten Flugzeuge nach eindeutiger Tail Number sowie jährliche Gesamtzahl der Flüge")
 ```
 
+---
+
 #  Fazit
 
 Mit einem cleveren Management von Im-/Export und den geeigneten Methoden/R-Paketen können auch mit R-Desktop Big Data-Probleme in einer begrenzten Größenordnung angegangen werden. Je größer die Datenmenge, desto wichtiger ist das genutzte Datenformat hinsichtlich Dateigröße und Parsing-Aufwand. Auf einen Formatvergleich in der Verarbeitung habe ich hier verzichtet. Vielleicht teste ich das später einmal aus.
@@ -180,6 +190,7 @@ Die optimierte Methode `read_csv` ist gegenüber der Basismethode `read.csv` wei
 Sind die Daten erst einmal als Tibble eingelesen, laufen einfache Analysefunktionen (z. B. `n()` oder `sum()`) und Gruppierungen mit `group_by()` erstaunlich effizient ab. Es spielt hier keine spürbare Rolle, wie groß der betrachtete Datensatz ist. Mit der Weiterverarbeitung von "Big Data mit R Desktop" will ich mich später bei Gelegenheit vertiefend beschäftigen...
 
 # Anhang: Build with
+
 ```{r info, cache =FALSE}
 sessionInfo()
 ```
