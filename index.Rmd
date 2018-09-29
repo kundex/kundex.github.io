@@ -1,6 +1,6 @@
 ---
 title: "R, RMarkdown und Reproducible Research"
-author: "Lars Hofmann"
+author: "Lars Bartsch"
 date: "`r Sys.Date()`"
 ---
 

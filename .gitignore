@@ -7,4 +7,5 @@ kundex.github.io.Rproj
 *.bz2
 pga_rr_cache
 pga_rr_files
-
+Rbigdata.html
+Rbigdata.Rmd

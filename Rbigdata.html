@@ -9,11 +9,9 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Lars Hofmann" />
 
-<meta name="date" content="2018-04-01" />
 
-<title>Big Data mit R Desktop?</title>
+<title></title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -300,7 +298,7 @@ div.tocify {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">Lars Hofmann</a>
+      <a class="navbar-brand" href="index.html">Lars Bartsch</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
@@ -329,7 +327,7 @@ div.tocify {
   <ul class="dropdown-menu" role="menu">
     <li class="dropdown-header">R schaffen</li>
     <li>
-      <a href="Rbigdata.html">2018-04-01 R-Big Data</a>
+      <a href="Rbigdata.html">2018-04-01 Big Data mit R</a>
     </li>
     <li>
       <a href="wordcloud.html">2018-03-15 Word Cloud</a>
@@ -364,13 +362,28 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Big Data mit R Desktop?</h1>
-<h4 class="author"><em>Lars Hofmann</em></h4>
-<h4 class="date"><em>2018-04-01</em></h4>
 
 </div>
 
 
+<table>
+<thead>
+<tr class="header">
+<th align="left">_</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">title: “Big Data mit R Desktop?”</td>
+</tr>
+<tr class="even">
+<td align="left">author: “Lars Hofmann”</td>
+</tr>
+<tr class="odd">
+<td align="left">date: “2018-09-29”</td>
+</tr>
+</tbody>
+</table>
 <div id="grenzbestimmung" class="section level1">
 <h1>Grenzbestimmung</h1>
 <p><strong>Big Data</strong> — oder <strong>Neue digitale Daten</strong>, wie es in der deutschen amtlichen Statistik heißt — sind nicht erst seit heute in vieler Munde. Große Datenmengen in diesem Sinne bedeuten eine immense Hochskalierung von Speichern, Methoden und Werkzeugen gegenüber “traditionellen” Datenmengen. Nun beschäftige ich mich hier nicht mit neueren Big Data-Frameworks oder Cloud Computing, sondern eher mit kleinskaligen, “normalen” R-Geschichten. Mich interessiert also, wo so ungefähr die Grenze verläuft — von Big Data für “normale” Nutzer, die sich mit R und Statistik beschäftigen.</p>
@@ -535,48 +548,6 @@ div.tocify {
 <span class="st">    </span><span class="kw">summarize</span>(<span class="kw">n_distinct</span>(TailNum), <span class="kw">n</span>()), 
   <span class="dt">format.args =</span> <span class="kw">list</span>(<span class="dt">decimal.mark =</span> <span class="st">&quot;,&quot;</span>, <span class="dt">big.mark =</span> <span class="st">&quot;.&quot;</span>), 
   <span class="dt">caption =</span> <span class="st">&quot;Zusammenfassung der Anzahl der eingesetzten Flugzeuge nach eindeutiger Tail Number sowie jährliche Gesamtzahl der Flüge&quot;)</span></code></pre></div>
-<table>
-<caption>Zusammenfassung der Anzahl der eingesetzten Flugzeuge nach eindeutiger Tail Number sowie jährliche Gesamtzahl der Flüge</caption>
-<thead>
-<tr class="header">
-<th align="left">Year</th>
-<th align="right">n_distinct(TailNum)</th>
-<th align="right">n()</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">2003</td>
-<td align="right">4.997</td>
-<td align="right">6.488.540</td>
-</tr>
-<tr class="even">
-<td align="left">2004</td>
-<td align="right">5.450</td>
-<td align="right">7.129.270</td>
-</tr>
-<tr class="odd">
-<td align="left">2005</td>
-<td align="right">5.093</td>
-<td align="right">7.140.596</td>
-</tr>
-<tr class="even">
-<td align="left">2006</td>
-<td align="right">5.081</td>
-<td align="right">7.141.922</td>
-</tr>
-<tr class="odd">
-<td align="left">2007</td>
-<td align="right">5.506</td>
-<td align="right">7.453.215</td>
-</tr>
-<tr class="even">
-<td align="left">2008</td>
-<td align="right">5.374</td>
-<td align="right">7.009.728</td>
-</tr>
-</tbody>
-</table>
 <hr />
 </div>
 <div id="fazit" class="section level1">
@@ -590,7 +561,7 @@ div.tocify {
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sessionInfo</span>()</code></pre></div>
 <pre><code>## R version 3.4.4 (2018-03-15)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
-## Running under: Ubuntu 16.04.4 LTS
+## Running under: Ubuntu 16.04.5 LTS
 ## 
 ## Matrix products: default
 ## BLAS: /usr/lib/libblas/libblas.so.3.6.0
@@ -616,7 +587,7 @@ div.tocify {
 ## loaded via a namespace (and not attached):
 ##  [1] slam_0.1-42      reshape2_1.4.3   haven_1.1.1      lattice_0.20-35 
 ##  [5] colorspace_1.3-2 htmltools_0.3.6  yaml_2.1.15      utf8_1.1.3      
-##  [9] rlang_0.1.6      pillar_1.1.0     foreign_0.8-69   glue_1.2.0      
+##  [9] rlang_0.1.6      pillar_1.1.0     foreign_0.8-70   glue_1.2.0      
 ## [13] gdtools_0.1.7    modelr_0.1.1     readxl_1.0.0     bindrcpp_0.2    
 ## [17] bindr_0.1        plyr_1.8.4       munsell_0.4.3    gtable_0.2.0    
 ## [21] cellranger_1.1.0 rvest_0.3.2      psych_1.7.8      evaluate_0.10.1 
@@ -627,7 +598,7 @@ div.tocify {
 ## [41] tools_3.4.4      magrittr_1.5     lazyeval_0.2.1   crayon_1.3.4    
 ## [45] pkgconfig_2.0.1  xml2_1.2.0       lubridate_1.7.2  assertthat_0.2.0
 ## [49] rmarkdown_1.8    httr_1.3.1       rstudioapi_0.7   R6_2.2.2        
-## [53] nlme_3.1-131.1   compiler_3.4.4</code></pre>
+## [53] nlme_3.1-137     compiler_3.4.4</code></pre>
 </div>
 
 <p><a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a><br />Dieses Werk ist lizenziert unter einer <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.</p>

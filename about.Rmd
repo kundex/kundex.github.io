@@ -1,11 +1,11 @@
 ---
 title: "Über"
-author: "Lars Hofmann"
+author: "Lars Bartsch"
 date: "`r Sys.Date()`"
 ---
 
-```{r, echo = FALSE, out.width = "30%", fig.align="left"}
-knitr::include_graphics("port.png")
+```{r, echo = FALSE, out.width = "40%", fig.align="left"}
+knitr::include_graphics("port.jpg")
 ```
 
 ======================
