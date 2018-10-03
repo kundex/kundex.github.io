@@ -1,7 +1,6 @@
 ---
 title: "Über"
 author: "Lars Bartsch"
-date: "`r Sys.Date()`"
 ---
 
 ```{r, echo = FALSE, out.width = "40%", fig.align="left"}
