@@ -24,7 +24,8 @@
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
-<link href="site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
 
 
@@ -57,9 +58,7 @@ h6 {
 </style>
 
 
-</head>
 
-<body>
 
 <style type = "text/css">
 .main-container {
@@ -78,8 +77,14 @@ img {
 .tabbed-pane {
   padding-top: 12px;
 }
+.html-widget {
+  margin-bottom: 20px;
+}
 button.code-folding-btn:focus {
   outline: none;
+}
+summary {
+  display: list-item;
 }
 </style>
 
@@ -95,7 +100,6 @@ body {
   padding-top: 66px;
   margin-top: -66px;
 }
-
 .section h2 {
   padding-top: 66px;
   margin-top: -66px;
@@ -115,6 +119,43 @@ body {
 .section h6 {
   padding-top: 66px;
   margin-top: -66px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
 }
 </style>
 
@@ -136,18 +177,75 @@ $(document).ready(function () {
 });
 </script>
 
-
-<div class="container-fluid main-container">
-
 <!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
 <script>
 $(document).ready(function () {
   window.buildTabsets("TOC");
 });
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
 </script>
 
 <!-- code folding -->
-
 
 
 
@@ -225,8 +323,6 @@ div.tocify {
 
 .tocify-subheader .tocify-item {
   font-size: 0.90em;
-  padding-left: 25px;
-  text-indent: 0;
 }
 
 .tocify .list-group-item {
@@ -235,6 +331,16 @@ div.tocify {
 
 
 </style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
 
 <!-- setup 3col/9col grid for toc_float and main content  -->
 <div class="row-fluid">
@@ -321,7 +427,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Über</h1>
-<h4 class="author"><em>Lars Bartsch</em></h4>
+<h4 class="author">Lars Bartsch</h4>
 
 </div>
 
@@ -334,9 +440,9 @@ div.tocify {
 <p>Mails werden gern gelesen über <code>lars[PUNKT]hofmann[AT]posteo[PUNKT]de</code>. PGP-Mails bitte mit <a href="https://pgp.mit.edu/pks/lookup?op=get&amp;search=0xA61035380ED543EC"><code>diesem Schlüssel</code></a> verschlüsseln.</p>
 <p>Fingerprint: <code>BB65 421F B2D5 F55D 43A9 EAAF A610 3538 0ED5 43EC</code>.</p>
 <p>======================</p>
-<p>Ich betreibe diese Webseiten (kundex.github.io und Subs, github.vom/kundex und Subs) <em>ausschließlich</em> zu privaten Zwecken. Das heißt weil ich Lust darauf habe. Ich biete hier absolut keine geschäftsmäßigen Dienste an. Wer dennoch welche findet, darf sie kostenfrei behalten.</p>
+<p>Ich betreibe diese Webseiten (kundex.github.io und Subs, github.vom/kundex und Subs) <em>ausschließlich</em> zu privaten Zwecken. Ich biete hier absolut keine geschäftsmäßigen Dienste an.</p>
 <p>Soweit nicht anders angegeben, sind alle Inhalte dieser Webseiten mein persönliches Werk. Diese Inhalte stelle ich unter die offene <strong>Creative Commons Attribution-ShareAlike 4.0 International-Lizenz</strong>. Das bedeutet, ein jeder kann die angebotenen Inhalte für jegliche Zwecke und ohne Einschränkungen kopieren und weiterverbreiten, sofern ich als Quelle genannt werde und die daraus gezogenen Inhalte nur unter einer kompatiblen offenen Lizenz weiterverbreitet werden.</p>
-<p>Ich verweise gelegentlich auf externe Ressourcen, die allesamt im R-Kontext stehen und nach meinem menschlichen Ermessen keinerlei rechtswidrige Inhalte enthalten oder enthalten werden. Das trifft natürlich auch auf die originären Inhalte meiner Webseiten zu.</p>
+<p>Ich verweise gelegentlich auf externe Ressourcen, die nach meinem Ermessen keinerlei rechtswidrige Inhalte enthalten. Das trifft natürlich auch auf die originären Inhalte meiner Webseiten zu.</p>
 
 <p><a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a><br />Dieses Werk ist lizenziert unter einer <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.</p>
 
