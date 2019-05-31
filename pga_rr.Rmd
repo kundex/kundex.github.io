@@ -1,7 +1,7 @@
 ---
 title: 'Exploring the NOAA Storm Database focused on severe weather events'
-author: "Lars Hofmann"
-date: "March 4, 2018"
+author: "Lars Bartsch"
+date: "04. März 2018"
 ---
 
 # Synopsis

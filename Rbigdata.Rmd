@@ -1,8 +1,7 @@
-_
 ---
-title: "Big Data mit R Desktop?"
-author: "Lars Hofmann"
-date: "`r Sys.Date()`"
+title: "Little Big Data mit R Desktop"
+author: "Lars Bartsch"
+date: "03. Oktober 2018"
 ---
 
 ```{r setup, include = FALSE}

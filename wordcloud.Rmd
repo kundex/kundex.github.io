@@ -1,7 +1,7 @@
 ---
 title: "Word Cloud-Generator für die Veröffentlichungsdatenbanken <br>von IT.NRW"
-author: "Lars Hofmann"
-date: "March 15, 2018"
+author: "Lars Bartsch"
+date: "15. März 2018"
 ---
 
 ```{r setup, include = FALSE}
