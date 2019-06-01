@@ -14,5 +14,5 @@ knitr::include_graphics("line.svg")
 
 ======================
 
-Herzlich willkommen auf meinen persönlichen Webseiten. Hier dreht sich eigentlich alles um R, RMarkdown und Reproducible Research im Experimentierstadium. Aber vielleicht findest Du ja etwas Interessantes. 
+Herzlich willkommen auf meinen persönlichen Webseiten. Hier dreht sich eigentlich alles um R, RMarkdown und Reproducible Research im Experimentierstadium.
 

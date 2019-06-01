@@ -9,20 +9,18 @@ knitr::include_graphics("port.jpg")
 
 ======================
 
-In jüngster Zeit (seit Ende 2017) beschäftige ich mich privat (wieder) intensiver mit R. Ich halte diese Sprache in Verbindung mit den heute verfügbaren Tools als das Umfangreichst-Eleganteste, was Statistiker / Data Scientists / und vergleichbare Berufs-Ettiketierungen derzeit nutzen können. Alles Open Source und frei verfügbar. Was ich damit alles anstelle, darüber schreibe ich hier. 
+Ich experimentiere gern mit R und RMarkdown. Mein Kerninteresse liegt bei damit erstellbaren Veröffentlichungsformaten und der Reproduzierbarkeit von Statistikergebnissen. Alles Open Source und frei verfügbar. Was ich damit alles anstelle, darüber schreibe ich sporadisch hier. 
 
-Beruflich beschäftige ich mich bei [`IT.NRW`](https://www.it.nrw.de) mit Veröffentlichungsdatenbanken. Das wird ab und an in meiner Beschäftigung mit R auch sichtbar, weil ich öffentlich verfügbare Daten der amtlichen Statistik gern mit R verarbeite. 
+Beruflich beschäftige ich mich bei [`IT.NRW`](https://www.it.nrw.de) mit den GENESIS-Veröffentlichungsdatenbanken für die amtliche Statistik. Auch hier gibt es Anknüpfpunkte für den Einsatz von R und RMarkdown.
 
-Dennoch: Alles was ich hier schreibe, ist rein privater Natur, sprich meine persönliche Meinung und mein persönliches Werk. Nichts, was ich hier schreibe, gibt eine Meinung oder Haltung meines Arbeitgebers wieder. Mehr zu meinem professionellen Profil gibt es auf [`xing`](https://www.xing.com/profile/Lars_Hofmann16) zu erfahren.
+Alles was ich hier schreibe ist rein privater Natur - sprich meine persönliche Meinung und mein persönliches Werk. Mehr zu meinem beruflichen Profil gibt es auf [`xing`](https://www.xing.com/profile/Lars_Bartsch7) zu erfahren.
 
-Mails werden gern gelesen über `lars[PUNKT]hofmann[AT]posteo[PUNKT]de`. PGP-Mails bitte mit [`diesem Schlüssel`](https://pgp.mit.edu/pks/lookup?op=get&search=0xA61035380ED543EC) verschlüsseln.
+Mails werden gern gelesen über `Lars[PUNKT]Bartsch[AT]posteo[PUNKT]de`. PGP-Mails bitte mit [`diesem Schlüssel`](https://keyserver.ubuntu.com/pks/lookup?op=get&fingerprint=on&search=0xAA96320AF7BC6174) verschlüsseln.
 
-Fingerprint: `BB65 421F B2D5 F55D 43A9 EAAF A610 3538 0ED5 43EC`.
+Fingerprint: `A5D6 B5B3 C387 49F2 FF1D 457E AA96 320A F7BC 6174`.
 
 ======================
 
-Ich betreibe diese Webseiten (kundex.github.io und Subs, github.vom/kundex und Subs) *ausschließlich* zu privaten Zwecken. Ich biete hier absolut keine geschäftsmäßigen Dienste an. 
+Ich betreibe diese Webseiten (kundex.github.io und Subs, github.com/kundex und Subs) *ausschließlich* zu privaten Zwecken. Ich biete hier absolut keine geschäftsmäßigen Dienste an. 
 
 Soweit nicht anders angegeben, sind alle Inhalte dieser Webseiten mein persönliches Werk. Diese Inhalte stelle ich unter die offene **Creative Commons Attribution-ShareAlike 4.0 International-Lizenz**. Das bedeutet, ein jeder kann die angebotenen Inhalte für jegliche Zwecke und ohne Einschränkungen kopieren und weiterverbreiten, sofern ich als Quelle genannt werde und die daraus gezogenen Inhalte nur unter einer kompatiblen offenen Lizenz weiterverbreitet werden.
-
-Ich verweise gelegentlich auf externe Ressourcen, die nach meinem Ermessen keinerlei rechtswidrige Inhalte enthalten. Das trifft natürlich auch auf die originären Inhalte meiner Webseiten zu.
