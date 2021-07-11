@@ -12,6 +12,8 @@ navbar:
       icon: fa-terminal
       menu:
         - text: "R schaffen"
+        - text: "TEST"
+          href: nutzungsbericht.html
         - text: "2018-04-01 Little Big Data mit R"
           href: Rbigdata.html
         - text: "2018-03-15 Word Cloud"
@@ -29,6 +31,7 @@ navbar:
 
 output:
   html_document:
+    code_folding: hide
     highlight: pygments
     theme: sandstone
     toc: yes
